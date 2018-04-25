@@ -8,7 +8,10 @@ Requerimientos previos para el desarrollo del programa:
   - pip Certifi
   - python-telegram-bot
 
-Antes de usar el programa cambiar los datos de nombre de usuario, chat id, servidores y el token del bot.
+Mover el programa a 'mv /usr/local/src/'
+
+Para poder reiniciar el equipo remoto tendremos que configurar la clave de ssh privada y publica -> http://artemicruz.blogspot.com.es/2012/06/ssh-sin-password-para-poder-realizar.html
 
 Comentarios:
   - 19/04/18 -> Actualmente el programa funciona a la perfección, pero se están añadiendo funcionalidades para que resulte mas accesible y cómodo a la hora de usarlo.
+  - 25/04/18 -> Todo correcto, se siguen pensando funcionalidades
