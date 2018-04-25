@@ -9,7 +9,7 @@ from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram import KeyboardButton, ReplyKeyboardMarkup
 from telegram import ReplyKeyboardRemove
 
-# usuIdName = {"Ale": 448634285, "Artemi": 6471791}
+usuIdName = {"Ale": 448634285, "Artemi": 6471791}
 usuChatId = [448634285, 6471791]
 hostIps = ["10.0.1.91", "10.2.34.65", "10.2.34.63", "10.0.1.26"]
 host_name = os.popen("hostname").read()
@@ -60,6 +60,26 @@ def unknown(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Lo siento, No entiendo el comando.")
 
 
+# testeame esta
+def reboot(bot, update):
+    """ reset interfaz"""
+    kb_server = []
+
+    for server in hostIps:
+        if server not in rebootServers:
+            kb_server.append([InlineKeyboardButton(server, callback_data=server)])
+    kb_server.insert(0, [InlineKeyboardButton("All", callback_data="all")])
+    # kb_server.append([InlineKeyboardButton("All", callback_data="all")])
+
+    """kb_server = [[InlineKeyboardButton(u'11', callback_data='1')],
+                 [InlineKeyboardButton(u'22', callback_data='2')],
+                 [InlineKeyboardButton(u'33', callback_data='3')]]"""
+
+    reply_markup = InlineKeyboardMarkup(kb_server)
+
+    update.message.reply_text('Seleccione el servidor que desea reiniciar: ', reply_markup=reply_markup)
+
+
 def teclado(bot, update):
     kb_servert = [["/reboot"], ["/reset"], ["/read_logs"]]
 
@@ -72,74 +92,32 @@ def teclado(bot, update):
                      reply_markup=ReplyKeyboardRemove(kb_servert))
 
 
-# funcion que pinta los servidores posibles a reiniciar
-def reboot(bot, update):
-    """ reset interfaz"""
-    kb_server = []
-
-    for server in hostIps:
-        if server not in rebootServers:
-            kb_server.append([InlineKeyboardButton(server, callback_data=server)])
-    kb_server.insert(0, [InlineKeyboardButton("Todos", resize="True", callback_data="all")])
-
-    """kb_server = [[InlineKeyboardButton(u'11', callback_data='1')],
-                 [InlineKeyboardButton(u'22', callback_data='2')],
-                 [InlineKeyboardButton(u'33', callback_data='3')]]"""
-
-    reply_markup = InlineKeyboardMarkup(kb_server)
-
-    # update.message.reply_text('Seleccione el servidor que desea reiniciar: ', reply_markup=reply_markup)
-    bot.send_message(text='Seleccione el servidor que desea reiniciar: ',
-                     chat_id=update.message.chat_id,
-                     reply_markup=reply_markup)
-
-
 def button(bot, update):
     query = update.callback_query
-
-    # Lanzamiento de control al pulsar un boton para tratar /reboot
-    control_reboot(bot, update, query)
-
 
     # "Selected option: {}".format( )
     # bot.edit_message_text(text=query.data, chat_id=query.message.chat_id, message_id=query.message.message_id)
 
+    admision = [[InlineKeyboardButton("Reiniciar", callback_data="reset"),
+                 InlineKeyboardButton("Cancelar", callback_data="cancel")]]
 
-    """bot.send_message(text="¿Desea Reiniciar el servidor? {}".format(query.data), chat_id=query.message.chat_id,
-                         message_id=query.message.message_id,
-                         reply_markup=reply_markupt)"""
+    reply_markupt = InlineKeyboardMarkup(admision)
 
-    """String_rebootServers = ''
-
-
-    for serv in rebootServers:
-        String_rebootServers += ''.join(serv) + ' '
-
-
-    bot.edit_message_text(text="Servers a reinciar: {}, si quiere añadir otro haga '/test'".format(String_rebootServers),
-                          chat_id=query.message.chat_id,
-                          message_id=query.message.message_id)"""
-
-
-def control_reboot(bot, update, query):
     if query.data == "cancel":
         bot.answerCallbackQuery(callback_query_id=update.callback_query.id,
                                 text="Se cancela el proceso de reinicio del servidor: {}".format(rebootServers[-1]))
-        bot.edit_message_text(text="Escriba '/reboot' para repetir la orden",
-                              chat_id=query.message.chat_id,
-                              message_id=query.message.message_id)
-        """bot.send_message(text="Escriba '/reboot' para repetir la orden",
+        bot.send_message(text="Escriba '/reboot' para repetir la orden",
                          chat_id=query.message.chat_id,
-                         message_id=query.message.message_id)"""
+                         message_id=query.message.message_id)
 
         del rebootServers[:]
 
     elif query.data == "reset":
         bot.answerCallbackQuery(callback_query_id=update.callback_query.id,
                                 text="Procedemos al reinicio del servidor: {}".format(rebootServers[-1]))
-        bot.edit_message_text(text="Escriba '/reboot' para repetir la orden",
-                              chat_id=query.message.chat_id,
-                              message_id=query.message.message_id)
+        bot.send_message(text="Escriba '/reboot' para repetir la orden",
+                         chat_id=query.message.chat_id,
+                         message_id=query.message.message_id)
         """
         bot.send_message(text="Procedemos al reinicio del servidor: {}".format(rebootServers[-1]),
                          chat_id=query.message.chat_id,
@@ -151,9 +129,6 @@ def control_reboot(bot, update, query):
         rebootServers.append(query.data)
         bot.answerCallbackQuery(callback_query_id=update.callback_query.id,
                                 text="Procedemos al reinicio todos los servidores")
-        bot.edit_message_text(text="Escriba '/reboot' para repetir la orden",
-                              chat_id=query.message.chat_id,
-                              message_id=query.message.message_id)
         """
         bot.send_message(text="Procedemos al reinicio todos los servidores",
                          chat_id=query.message.chat_id,
@@ -161,64 +136,22 @@ def control_reboot(bot, update, query):
         """
         reset(bot, update, rebootServers[-1])
     else:
-        admision = [[InlineKeyboardButton("Reiniciar", callback_data="reset"),
-                     InlineKeyboardButton("Cancelar", callback_data="cancel")]]
-
-        reply_markupt = InlineKeyboardMarkup(admision)
-
         bot.answerCallbackQuery(callback_query_id=update.callback_query.id, text="Procesando...")
         rebootServers.append(query.data)
-        bot.edit_message_text(text="¿Desea Reiniciar el servidor? {}".format(query.data),
-                              chat_id=query.message.chat_id,
-                              message_id=query.message.message_id,
-                              reply_markup=reply_markupt)
+        bot.send_message(text="¿Desea Reiniciar el servidor? {}".format(query.data), chat_id=query.message.chat_id,
+                         message_id=query.message.message_id,
+                         reply_markup=reply_markupt)
+
+    """String_rebootServers = ''
 
 
-# ------------------------------------------------------------------------------
+    for serv in rebootServers:
+        String_rebootServers += ''.join(serv) + ' '
 
 
-def test(bot, update):
-    kb_server = []
-
-    bot.send_message(chat_id=448634285, text="Algo",
-                     reply_markup=ReplyKeyboardMarkup([[KeyboardButton("Yes")], [KeyboardButton("No")]]))
-
-    time.sleep(5)
-    awesome(bot, update)
-
-
-def awesome(bot, update):
-    bot.send_message(chat_id=448634285, text="quizas",
-                     reply_markup=ReplyKeyboardRemove())
-
-    """bot.send_message({
-        'chat_id': 448634285,
-        'text': "Algo",
-        'reply_markup': {
-            'keyboard': [
-                [{'text': "Yes"}],
-                [{'text': "No"}]
-            ]
-        }
-    })"""
-
-
-def test_callback(bot, update):
-    query = update.callback_query
-    admision = [[InlineKeyboardButton("oju jose", callback_data="reset")]]
-
-    reply_markupt = InlineKeyboardMarkup(admision)
-
-    print update.callback_query.message.message_id
-    """bot.send_message(text="Escriba lo que quiera",
-                     chat_id=query.message.chat_id,
-                     message_id=args,
-                     reply_markup=reply_markupt)"""
-    bot.edit_message_text(text="Awi con tomate",
+    bot.edit_message_text(text="Servers a reinciar: {}, si quiere añadir otro haga '/test'".format(String_rebootServers),
                           chat_id=query.message.chat_id,
-                          message_id=query.message.message_id)
-    print update.callback_query.message.message_id
-# ------------------------------------------------------------------------------
+                          message_id=query.message.message_id)"""
 
 
 # funcion para lanzar un mensaje a todos los usuarios
@@ -422,12 +355,6 @@ dispatcher.add_handler(start_handler)
 
 callback_handler = CallbackQueryHandler(button)
 dispatcher.add_handler(callback_handler)
-
-#test_callback_handler = CallbackQueryHandler(test_callback)
-#dispatcher.add_handler(test_callback_handler)
-
-test_handler = CommandHandler('test', test)
-dispatcher.add_handler(test_handler)
 
 caps_handler = CommandHandler('caps', caps, pass_args=True)
 dispatcher.add_handler(caps_handler)
