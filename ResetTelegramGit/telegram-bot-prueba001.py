@@ -24,7 +24,7 @@ rebootServers = []
 
 print("Vamos a empezar.")
 
-updater = Updater(token='427931544:AAEdDnK2cAqh2HtJZnPTORHhAOp1L8LupfE')
+updater = Updater(token='554619593:AAEsdjjmoAEwTj-Jp6yfU3y_qFEwys59Lk0')
 dispatcher = updater.dispatcher
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
